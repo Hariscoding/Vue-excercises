@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+
+<p>
+    Task 1:
+    Napravite Vue aplikaciju koja će unutar znakova xx xx ispisati koliko je milisekundi trebalo da se poništi cross-domain zahtjev poslan na http://output.jsbin.com/sucebovoka.json. 
+    
+    Rjesenje: 
+    
+</p>
+ 
+ <div id="app">
+   Open browser devtools in network tab to see requests
+   <hr>
+   <button @click="send">Send</button>
+   <button :disabled="!request" @click="cancel">Cancel</button>
+   <hr>
+   <DisplayRequests :requests="requests" :request="request"/>
+ </div> 
+ 
+<script>
+import axios from "axios";
+import DisplayRequests from "./components/DisplayRequests";
+ 
+const API_URL = "http://output.jsbin.com/sucebovoka.json";
+ 
+export default {
+ name: "App",
+ 
+ components: { DisplayRequests },
+ 
+ data: () => ({
+   requests: [],
+   request: null,
+   sendTime: null,
+   cancelTime: null
+ }),
+ 
+ methods: {
+   send() {
+     if (this.request) this.cancel();
+     this.makeRequest();
+     this.sendTime = new Date();
+   },
+ 
+   cancel() {
+     this.request.cancel();
+     this.clearOldRequest("Cancelled");
+     this.cancelTime = new Date();
+     alert(this.cancelTime-this.sendTime)
+   },
+ 
+   makeRequest() {
+     const axiosSource = axios.CancelToken.source();
+     this.request = { cancel: axiosSource.cancel, msg: "Loading..." };
+     axios
+       .get(API_URL, { cancelToken: axiosSource.token })
+       .then(() => {
+         this.clearOldRequest("Success");
+       })
+       .catch(this.logResponseErrors);
+   },
+ 
+   logResponseErrors(err) {
+     if (axios.isCancel(err)) {
+       console.log("Request cancelled");
+     }
+   },
+ 
+   clearOldRequest(msg) {
+     this.request.msg = msg;
+     this.requests.push(this.request);
+     this.request = null;
+   }
+ }
+};
+</script>
+
+</body>
+</html>

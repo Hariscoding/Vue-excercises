@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <title>Document</title>
+    <style>
+        *{
+            user-select: none;
+        }
+        input {
+            display: inline-block;
+        }
+        li {
+            display: inline-block;
+        }
+        div {
+            margin: 10px;
+            width: 100px;
+        }
+        #app {
+            margin: 100px;
+        }
+        button{
+            margin-top: 20px;
+            background-color:rgb(0,0,0,0.6);
+            border: none;
+            color: white;
+            padding: 10px;
+        }
+        .checkd{
+            text-decoration: line-through;
+            color: red;
+        }
+    </style>
+</head>
+<body>
+
+    <p>Task 1:
+        Napravite checklistu namirnica koje treba kupiti. 
+        Kad se klikne na checkbox ili na ime namirnice, prekrižite ime i disable-ajte checkbox. 
+        Kad su svi itemi prekriženi, prikažite dugme za reset koje će vratiti listu na prvotno stanje.
+    </p>
+
+    <div id="app">
+ 
+        <ul>
+            
+            <div v-for="(namirnica,index) in namirnice" :key="index"
+            :class="{ checkd: namirnica.checkirano }">
+                <label :for="index">{{ namirnica.ime }}</label>
+                <input @click="func(index)" :id=index type="checkbox" 
+                :disabled="namirnica.checkirano">
+                
+            </div>
+ 
+        </ul>
+ 
+        <button @click="resetAll" v-show="counter>4"> Reset all </button>
+ 
+    </div>
+ 
+    <script src="script.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+ 
+    <script>
+    
+    const app = new Vue({
+        el: '#app',
+        data: {
+            counter: 0,
+            namirnice: [
+            {
+                checkirano: false,
+                id: 0,
+                ime: "Sok"
+            },
+            {
+                checkirano: false,
+                id: 1,
+                ime: "Cokolada"
+            },
+            {
+                checkirano: false,
+                id: 2,
+                ime: "Keks"
+            },
+            {
+                checkirano: false,
+                id: 3,
+                ime: "Sladoled"
+            },
+            {
+                checkirano: false,
+                id: 4,
+                ime: "Ulje"
+            }
+            ]
+        },
+        methods: {
+            resetAll(){
+                const inputs = document.querySelectorAll("input");
+                inputs.forEach(input => {
+                    input.checked = false
+                })
+                this.counter = 0
+                this.namirnice.forEach(element => {
+                    element.checkirano = false;
+                });
+            },
+            func(index){
+               this.namirnice[index].checkirano = !this.namirnice[index].checkirano
+                this.counter++
+            }
+        }
+    })
+ 
+ 
+    </script>
+ 
+</body>
+</html>
